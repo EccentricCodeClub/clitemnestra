@@ -1,0 +1,25 @@
+# Virtual Environments
+venv/
+bin/
+lib/
+pyvenv.cfg
+poetry.lock
+
+# Editor Configurations
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+
+# Pip
+src/
+
+# MacOS Folder Metadata File
+.DS_Store
+
+# Vim swap files
+*.swp
+
+# Sketch files
+docs/sketchs/

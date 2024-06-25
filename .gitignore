@@ -5,15 +5,18 @@ lib/
 pyvenv.cfg
 poetry.lock
 
-# Editor Configurations
-.vscode/
-.idea/
-
 # Python
 __pycache__/
 
 # Pip
 src/
+
+# Pytest
+.coverage
+
+# Editor Configurations
+.vscode/
+.idea/
 
 # MacOS Folder Metadata File
 .DS_Store

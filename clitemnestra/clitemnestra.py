@@ -18,11 +18,10 @@ def main():
 
 	parser = parse_args(input_args)
 
-	if parser.command == 'list':
-		# Done
+	if parser.command == 'list':		# Done
 		command_list(parser.tag)
-	elif parser.command == 'search':
-		print("Em Construção")
+	elif parser.command == 'search':	# Done
+		command_search(parser.term)
 	elif parser.command == 'edit':
 		print("Em Construção")
 	elif parser.command == 'config':
@@ -39,6 +38,48 @@ def main():
 
 
 
+def command_search(term):
+	print("function: command_search")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	console = Console()
+
+	table_script = Table(title="Scripts", show_lines=True, safe_box=True)
+	table_script.add_column("Name", style="cyan", no_wrap=True)
+	table_script.add_column("Path", style="magenta")
+	table_script.add_column("Executor", style="green")
+	table_script.add_column("Tag", style="dodger_blue1")
+
+	table_executor = Table(title="Executors", show_lines=True, safe_box=True)
+	table_executor.add_column("Name", style="cyan", no_wrap=True)
+	table_executor.add_column("Command", style="green")
+	table_executor.add_column("Tag", style="dodger_blue1")
+
+	try:
+		for script in content['scripts']:
+			flatten_script = set(flatten(script))
+			for item in flatten_script:
+				if term in item:
+					table_script.add_row(script['name'], script['path'], script['executor'], '\n'.join(script['tags']))
+					break
+	except Exception as e:
+		print("No scripts found")
+
+	try:
+		for executor in content['executor']:
+			flatten_executor = set(flatten(executor))
+			for item in flatten_executor:
+				if term in item:
+					table_executor.add_row(executor['name'], executor['command'], '\n'.join(executor['tags']))
+					break
+	except Exception as e:
+		print("No executors found")
+
+	console.print(Columns([table_script, table_executor]))
+
+
+
 def command_list(tag):
 	print("function: command_list")
 
@@ -46,33 +87,47 @@ def command_list(tag):
 
 	console = Console()
 
-	table_script = Table(title="Scripts")
-	table_script.add_column("Nickname", style="cyan", no_wrap=True)
+	table_script = Table(title="Scripts", show_lines=True, safe_box=True)
+	table_script.add_column("Name", style="cyan", no_wrap=True)
 	table_script.add_column("Path", style="magenta")
 	table_script.add_column("Executor", style="green")
+	table_script.add_column("Tag", style="dodger_blue1")
 
-	table_executor = Table(title="Executors")
-	table_executor.add_column("Tag", style="green", no_wrap=True)
-	table_executor.add_column("Command", style="dodger_blue1", justify="right")
+	table_executor = Table(title="Executors", show_lines=True, safe_box=True)
+	table_executor.add_column("Name", style="cyan", no_wrap=True)
+	table_executor.add_column("Command", style="green")
+	table_executor.add_column("Tag", style="dodger_blue1")
 
 	if tag:
-		print("List scripts and executors with tag: {}".format(tag))
+		print(f"Filtering by tag: {tag}\n")
 
 	try:
 		for script in content['scripts']:
-			if tag is None or tag in script['nickname'] or tag in script['executor']:
-				table_script.add_row(script['nickname'], script['path'], script['executor'])
+			if tag is None or tag in script['tags']:
+				table_script.add_row(script['name'], script['path'], script['executor'], '\n'.join(script['tags']))
 	except Exception as e:
 		print("No scripts found")
 
 	try:
 		for executor in content['executor']:
-			if tag is None or tag in executor['tag']:
-				table_executor.add_row(executor['tag'], executor['command'])
+			if tag is None or tag in executor['tags']:
+				table_executor.add_row(executor['name'], executor['command'], '\n'.join(executor['tags']))
 	except Exception as e:
 		print("No executors found")
 
 	console.print(Columns([table_script, table_executor]))
+
+
+
+def flatten(obj):
+	if isinstance(obj, dict):
+		for val in obj.values():
+			yield from flatten(val)
+	elif isinstance(obj, list):
+		for val in obj:
+			yield from flatten(val)
+	else:
+		yield obj
 
 
 
@@ -107,7 +162,7 @@ def check_toml_integrity(file_path):
 	# check if toml scripts have valid keys
 	if doc.get('scripts') is not None:
 		for script in doc['scripts']:
-			if script.get('nickname') is None or \
+			if script.get('name') is None or \
 				script.get('path') is None or \
 				script.get('executor') is None:
 				print("ERROR: Invalid script key")
@@ -116,7 +171,7 @@ def check_toml_integrity(file_path):
 	# check if toml executors have valid keys
 	if doc.get('executor') is not None:
 		for executor in doc['executor']:
-			if executor.get('tag') is None or \
+			if executor.get('name') is None or \
 				executor.get('command') is None:
 				print("ERROR: Invalid executor key")
 				sys.exit(1)
@@ -138,7 +193,7 @@ def parse_args(args):
 	# > clitemnestra
 	# 	> clitemnestra list
 	# 		> clitemnestra list <tag>
-	# 	> clitemnestra search <nickname>
+	# 	> clitemnestra search <term>
 	# 	> clitemnestra edit
 	# 	> clitemnestra config
 	# 	> clitemnestra exec <nickname>
@@ -157,12 +212,12 @@ def parse_args(args):
 	list_parser = subparsers.add_parser('list', help='list scripts')
 	list_parser.add_argument('tag', nargs='?', type=str, help='filter by tag')
 
-	# > clitemnestra search <nickname>
-	search_parser = subparsers.add_parser('search', help='search for a script')
-	search_parser.add_argument('nickname', type=str, help='nickname of the script')
+	# > clitemnestra search <term>
+	search_parser = subparsers.add_parser('search', help='search records by term')
+	search_parser.add_argument('term', type=str, help='term for search')
 
 	# > clitemnestra edit
-	edit_parser = subparsers.add_parser('edit', help='edit a script')
+	edit_parser = subparsers.add_parser('edit', help='edit configuration file')
 
 	# > clitemnestra config
 	config_parser = subparsers.add_parser('config', help='manage configuration')

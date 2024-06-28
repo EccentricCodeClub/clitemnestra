@@ -11,8 +11,8 @@ import clitemnestra.clitemnestra
 # x clitemnestra list <tag> <errortag>
 
 # x clitemnestra search
-# > clitemnestra search <nickname>
-# x clitemnestra search <nickname> <errorarg>
+# > clitemnestra search <term>
+# x clitemnestra search <term> <errorarg>
 
 # > clitemnestra edit
 # x clitemnestra edit <errorarg>
@@ -104,15 +104,15 @@ def test_parser_search():
 	with pytest.raises(SystemExit):
 		clitemnestra.clitemnestra.parse_args(["search"])
 
-# > clitemnestra search <nickname>
-def test_parser_search_nickname():
-	parser = clitemnestra.clitemnestra.parse_args(["search", "nickname"])
-	assert parser.command is 'search' and parser.nickname is 'nickname'
+# > clitemnestra search <term>
+def test_parser_search_term():
+	parser = clitemnestra.clitemnestra.parse_args(["search", "term"])
+	assert parser.command is 'search' and parser.term is 'term'
 
-# x clitemnestra search <nickname> <errorarg>
-def test_parser_search_nickname_errorarg():
+# x clitemnestra search <term> <errorarg>
+def test_parser_search_term_errorarg():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["search", "nickname", "errorarg"])
+		clitemnestra.clitemnestra.parse_args(["search", "term", "errorarg"])
 
 # > clitemnestra edit
 def test_parser_edit():

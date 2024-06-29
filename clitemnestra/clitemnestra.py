@@ -25,10 +25,10 @@ def main():
 		command_list(parser.tag)
 	elif parser.command == 'search':	# Done
 		command_search(parser.term)
-	elif parser.command == 'edit':
+	elif parser.command == 'edit':		# WIP
 		print("Under Construction")
-	elif parser.command == 'config':	# WIP
-		print("Under Construction")
+	elif parser.command == 'config':	# Done
+		command_config()
 	elif parser.command == 'exec':
 		print("Under Construction")
 	elif parser.command == 'script':
@@ -39,6 +39,34 @@ def main():
 		# print("Invalid command")
 		# sys.exit(1)
 		default_info()
+
+
+
+def command_config():
+	print("function: command_config")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	console = Console()
+
+	table_config = Table(title="Config File", show_lines=True, safe_box=True)
+	table_config.add_column("Variable", style="dodger_blue1", no_wrap=True)
+	table_config.add_column("Value", style="white")
+
+	try:
+		for items in content['config']:
+			if content['config'][items] is False:
+				table_config.add_row(items, "[bright_red]" + str(content['config'][items]))
+			elif content['config'][items] is True:
+				table_config.add_row(items, "[bright_green]" + str(content['config'][items]))
+			else:
+				table_config.add_row(items, str(content['config'][items]))
+	except Exception as e:
+		print("No config found")
+
+	console.print(table_config)
+
+
 
 def default_info():
 	data = [
@@ -52,7 +80,7 @@ def default_info():
 		"  list <tag>      List scripts",
 		"  search <term>   Search records by term",
 		"  edit            Edit configuration file",
-		"  config          Manage configuration",
+		"  config          Show configuration",
 		"  exec <nickname> Execute a script",
 		"  script          Manage scripts",
 		"  executor        Manage executors",
@@ -267,7 +295,7 @@ def parse_args(args):
 	edit_parser = subparsers.add_parser('edit', help='edit configuration file')
 
 	# > clitemnestra config
-	config_parser = subparsers.add_parser('config', help='manage configuration')
+	config_parser = subparsers.add_parser('config', help='show configuration')
 
 	# > clitemnestra exec <nickname>
 	exec_parser = subparsers.add_parser('exec', help='execute a script')

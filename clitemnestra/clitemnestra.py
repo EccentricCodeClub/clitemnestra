@@ -1,6 +1,7 @@
 # #! /usr/bin/env python3
 
 import argparse
+import subprocess
 import sys
 import tomlkit
 from rich.console import Console
@@ -14,6 +15,7 @@ from rich.text import Text
 CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
 
 
+
 def main():
 	print("function: main")
 
@@ -25,20 +27,49 @@ def main():
 		command_list(parser.tag)
 	elif parser.command == 'search':	# Done
 		command_search(parser.term)
-	elif parser.command == 'edit':		# WIP
-		print("Under Construction")
+	elif parser.command == 'edit':		# Done
+		command_edit()
 	elif parser.command == 'config':	# Done
 		command_config()
 	elif parser.command == 'exec':
 		print("Under Construction")
-	elif parser.command == 'script':
+	elif parser.command == 'script':	# WIP
 		print("Under Construction")
 	elif parser.command == 'executor':
 		print("Under Construction")
-	else:
+	else:								# WIP
 		# print("Invalid command")
 		# sys.exit(1)
 		default_info()
+
+
+
+def command_edit():
+	print("function: command_edit")
+	# common editors: nano, neovim, vim, vi, emacs, gedit, code
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	editor = None
+	# detect the editor of configuration file
+	try:
+		editor = content['config']['editor']
+		print(f"Editor: {editor}")
+	except Exception as e:
+		print("No config found")
+		print(e)
+		sys.exit(1)
+
+	if editor is None:
+		print("Editor not found in config file")
+		sys.exit(1)
+	else:
+		try:
+			os.system(f"{editor} {CONFIG_FILE_PATH}")
+		except Exception as e:
+			print("ERROR: editor error")
+			print(e)
+			sys.exit(1)
 
 
 
@@ -63,6 +94,7 @@ def command_config():
 				table_config.add_row(items, str(content['config'][items]))
 	except Exception as e:
 		print("No config found")
+		sys.exit(1)
 
 	console.print(table_config)
 

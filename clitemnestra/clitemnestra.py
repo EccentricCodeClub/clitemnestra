@@ -1,14 +1,14 @@
-# #! /usr/bin/env python3
+#! /usr/bin/env python3
 
 import argparse
-import subprocess
+import os
+import random
 import sys
+
 import tomlkit
+from rich.columns import Columns
 from rich.console import Console
 from rich.table import Table
-from rich.columns import Columns
-import random
-import os
 from rich.text import Text
 
 # CONSTANTS

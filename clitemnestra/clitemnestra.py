@@ -32,16 +32,52 @@ def main():
 		command_edit()
 	elif parser.command == 'config':	# Done
 		command_config()
-	elif parser.command == 'exec':
-		print("Under Construction")
+	elif parser.command == 'exec':		# Done
+		command_exec(parser.nickname)
 	elif parser.command == 'script':	# Done
 		command_script(parser)
 	elif parser.command == 'executor':	# Done
 		command_executor(parser)
-	else:								# WIP
-		# print("Invalid command")
-		# sys.exit(1)
+	else:								# Done
 		default_info()
+
+
+
+def command_exec(nickname):
+	print("function: command_exec")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	nickname_exists = False
+	target = None
+	execution = None
+
+	for script in content['scripts']:
+		if script['name'] == nickname:
+			nickname_exists = True
+			target = script
+			break
+
+	if not nickname_exists or target is None:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	for items in content['executor']:
+		if items['name'] == target['executor']:
+			execution = items['command'] + " " + target['path']
+			break
+
+	if execution is not None:
+		print(f"Executing: {execution}")
+		try:
+			os.system(execution)
+		except Exception as e:
+			print("ERROR: execution error")
+			print(e)
+			sys.exit(1)
+	else:
+		print("ERROR: executor not found")
+		sys.exit(1)
 
 
 

@@ -18,33 +18,33 @@ CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
 
 
 def main():
-	print("function: main")
+	# print("function: main")
 
 	input_args = sys.argv[1:]
 
 	parser = parse_args(input_args)
 
-	if parser.command == 'list':		# Done
+	if parser.command == 'list':
 		command_list(parser.tag)
-	elif parser.command == 'search':	# Done
+	elif parser.command == 'search':
 		command_search(parser.term)
-	elif parser.command == 'edit':		# Done
+	elif parser.command == 'edit':
 		command_edit()
-	elif parser.command == 'config':	# Done
+	elif parser.command == 'config':
 		command_config()
-	elif parser.command == 'exec':		# Done
+	elif parser.command == 'exec':
 		command_exec(parser.nickname)
-	elif parser.command == 'script':	# Done
+	elif parser.command == 'script':
 		command_script(parser)
-	elif parser.command == 'executor':	# Done
+	elif parser.command == 'executor':
 		command_executor(parser)
-	else:								# Done
+	else:
 		default_info()
 
 
 
 def command_exec(nickname):
-	print("function: command_exec")
+	# print("function: command_exec")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -82,7 +82,7 @@ def command_exec(nickname):
 
 
 def command_executor(parser):
-	print("function: command_executor")
+	# print("function: command_executor")
 
 	if parser.executor_command == 'create':
 		command_executor_create(parser.nickname, parser.runner)
@@ -99,7 +99,7 @@ def command_executor(parser):
 
 
 def command_executor_create(nickname, runner):
-	print("function: command_executor_create")
+	# print("function: command_executor_create")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -124,7 +124,7 @@ def command_executor_create(nickname, runner):
 
 
 def command_executor_read(nickname):
-	print("function: command_executor_read")
+	# print("function: command_executor_read")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -157,7 +157,7 @@ def command_executor_read(nickname):
 
 
 def command_executor_update(nickname, new_nickname, new_runner):
-	print("function: command_executor_update")
+	# print("function: command_executor_update")
 	
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -182,7 +182,7 @@ def command_executor_update(nickname, new_nickname, new_runner):
 
 
 def command_executor_delete(nickname):
-	print("function: command_executor_delete")
+	# print("function: command_executor_delete")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -210,7 +210,7 @@ def command_executor_delete(nickname):
 
 
 def command_script(parser):
-	print("function: command_script")
+	# print("function: command_script")
 
 	if parser.script_command == 'create':
 		command_script_create(parser.nickname, parser.path, parser.executor)
@@ -227,7 +227,7 @@ def command_script(parser):
 
 
 def command_script_create(nickname, path, executor):
-	print("function: command_script_create")
+	# print("function: command_script_create")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -265,7 +265,7 @@ def command_script_create(nickname, path, executor):
 
 
 def command_script_read(nickname):
-	print("function: command_script_read")
+	# print("function: command_script_read")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -318,7 +318,7 @@ def command_script_read(nickname):
 
 
 def command_script_update(nickname, new_nickname, new_path, new_executor):
-	print("function: command_script_update")
+	# print("function: command_script_update")
 	
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -356,7 +356,7 @@ def command_script_update(nickname, new_nickname, new_path, new_executor):
 
 
 def command_script_delete(nickname):
-	print("function: command_script_delete")
+	# print("function: command_script_delete")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -384,7 +384,7 @@ def command_script_delete(nickname):
 
 
 def command_edit():
-	print("function: command_edit")
+	# print("function: command_edit")
 	# common editors: nano, neovim, vim, vi, emacs, gedit, code
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
@@ -413,7 +413,7 @@ def command_edit():
 
 
 def command_config():
-	print("function: command_config")
+	# print("function: command_config")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -440,6 +440,8 @@ def command_config():
 
 
 def default_info():
+	# print("function: default_info")
+
 	data = [
 		"Clitemnestra",
 		"Version: -",
@@ -485,7 +487,7 @@ def default_info():
 
 
 def command_search(term):
-	print("function: command_search")
+	# print("function: command_search")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -527,7 +529,7 @@ def command_search(term):
 
 
 def command_list(tag):
-	print("function: command_list")
+	# print("function: command_list")
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
@@ -566,6 +568,8 @@ def command_list(tag):
 
 
 def flatten(obj):
+	# print("function: flatten")
+
 	if isinstance(obj, dict):
 		for val in obj.values():
 			yield from flatten(val)
@@ -578,7 +582,7 @@ def flatten(obj):
 
 
 def check_toml_integrity(file_path):
-	print("function: check_toml_integrity")
+	# print("function: check_toml_integrity")
 
 	# check if file exists
 	try:
@@ -627,7 +631,7 @@ def check_toml_integrity(file_path):
 
 
 def parse_args(args):
-	print("function: parse_args")
+	# print("function: parse_args")
 
 	parser = argparse.ArgumentParser(
 		prog='clitemnestra',

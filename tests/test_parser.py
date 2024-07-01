@@ -52,23 +52,23 @@ import clitemnestra.clitemnestra
 # x clitemnestra executor <errorarg>
 
 # x clitemnestra executor create
-# x clitemnestra executor create <tag>
-# > clitemnestra executor create <tag> <command>
-# x clitemnestra executor create <tag> <command> <errorarg>
+# x clitemnestra executor create <nickname>
+# > clitemnestra executor create <nickname> <command>
+# x clitemnestra executor create <nickname> <command> <errorarg>
 
 # x clitemnestra executor read
-# > clitemnestra executor read <tag>
-# x clitemnestra executor read <tag> <errorarg>
+# > clitemnestra executor read <nickname>
+# x clitemnestra executor read <nickname> <errorarg>
 
 # x clitemnestra executor update
-# x clitemnestra executor update <tag>
-# x clitemnestra executor update <tag> <new_tag>
-# > clitemnestra executor update <tag> <new_tag> <new_command>
-# x clitemnestra executor update <tag> <new_tag> <new_command> <errorarg>
+# x clitemnestra executor update <nickname>
+# x clitemnestra executor update <nickname> <new_nickname>
+# > clitemnestra executor update <nickname> <new_nickname> <new_command>
+# x clitemnestra executor update <nickname> <new_nickname> <new_command> <errorarg>
 
 # x clitemnestra executor delete
-# > clitemnestra executor delete <tag>
-# x clitemnestra executor delete <tag> <errorarg>
+# > clitemnestra executor delete <nickname>
+# x clitemnestra executor delete <nickname> <errorarg>
 
 
 
@@ -280,93 +280,93 @@ def test_parser_executor_create():
 	with pytest.raises(SystemExit):
 		clitemnestra.clitemnestra.parse_args(["executor", "create"])
 
-# x clitemnestra executor create <tag>
-def test_parser_executor_create_tag():
+# x clitemnestra executor create <nickname>
+def test_parser_executor_create_nickname():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "create", "tag"])
+		clitemnestra.clitemnestra.parse_args(["executor", "create", "nickname"])
 
-# > clitemnestra executor create <tag> <command>
-def test_parser_executor_create_tag_command():
-	parser = clitemnestra.clitemnestra.parse_args(["executor", "create", "tag", "command"])
+# > clitemnestra executor create <nickname> <command>
+def test_parser_executor_create_nickname_command():
+	parser = clitemnestra.clitemnestra.parse_args(["executor", "create", "nickname", "command"])
 	assert (
 		parser.command is 'executor' and
 		parser.executor_command is 'create' and
-		parser.tag is 'tag' and
+		parser.nickname is 'nickname' and
 		parser.runner is 'command'
 	)
 
-# x clitemnestra executor create <tag> <command> <errorarg>
-def test_parser_executor_create_tag_command_errorarg():
+# x clitemnestra executor create <nickname> <command> <errorarg>
+def test_parser_executor_create_nickname_command_errorarg():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "create", "tag", "command", "errorarg"])
+		clitemnestra.clitemnestra.parse_args(["executor", "create", "nickname", "command", "errorarg"])
 
 # x clitemnestra executor read
 def test_parser_executor_read():
 	with pytest.raises(SystemExit):
 		clitemnestra.clitemnestra.parse_args(["executor", "read"])
 
-# > clitemnestra executor read <tag>
-def test_parser_executor_read_tag():
-	parser = clitemnestra.clitemnestra.parse_args(["executor", "read", "tag"])
+# > clitemnestra executor read <nickname>
+def test_parser_executor_read_nickname():
+	parser = clitemnestra.clitemnestra.parse_args(["executor", "read", "nickname"])
 	assert (
 		parser.command is 'executor' and
 		parser.executor_command is 'read' and
-		parser.tag is 'tag'
+		parser.nickname is 'nickname'
 	)
 
-# x clitemnestra executor read <tag> <errorarg>
-def test_parser_executor_read_tag_errorarg():
+# x clitemnestra executor read <nickname> <errorarg>
+def test_parser_executor_read_nickname_errorarg():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "read", "tag", "errorarg"])
+		clitemnestra.clitemnestra.parse_args(["executor", "read", "nickname", "errorarg"])
 
 # x clitemnestra executor update
 def test_parser_executor_update():
 	with pytest.raises(SystemExit):
 		clitemnestra.clitemnestra.parse_args(["executor", "update"])
 
-# x clitemnestra executor update <tag>
-def test_parser_executor_update_tag():
+# x clitemnestra executor update <nickname>
+def test_parser_executor_update_nickname():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "update", "tag"])
+		clitemnestra.clitemnestra.parse_args(["executor", "update", "nickname"])
 
-# x clitemnestra executor update <tag> <new_tag>
-def test_parser_executor_update_tag_new_tag():
+# x clitemnestra executor update <nickname> <new_nickname>
+def test_parser_executor_update_nickname_new_nickname():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "update", "tag", "new_tag"])
+		clitemnestra.clitemnestra.parse_args(["executor", "update", "nickname", "new_nickname"])
 
-# > clitemnestra executor update <tag> <new_tag> <new_command>
-def test_parser_executor_update_tag_new_tag_new_command():
-	parser = clitemnestra.clitemnestra.parse_args(["executor", "update", "tag", "new_tag", "new_command"])
+# > clitemnestra executor update <nickname> <new_nickname> <new_command>
+def test_parser_executor_update_nickname_new_nickname_new_command():
+	parser = clitemnestra.clitemnestra.parse_args(["executor", "update", "nickname", "new_nickname", "new_command"])
 	assert (
 		parser.command is 'executor' and
 		parser.executor_command is 'update' and
-		parser.tag is 'tag' and
-		parser.new_tag is 'new_tag' and
+		parser.nickname is 'nickname' and
+		parser.new_nickname is 'new_nickname' and
 		parser.new_runner is 'new_command'
 	)
 
-# x clitemnestra executor update <tag> <new_tag> <new_command> <errorarg>
-def test_parser_executor_update_tag_new_tag_new_command_errorarg():
+# x clitemnestra executor update <nickname> <new_nickname> <new_command> <errorarg>
+def test_parser_executor_update_nickname_new_nickname_new_command_errorarg():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "update", "tag", "new_tag", "new_command", "errorarg"])
+		clitemnestra.clitemnestra.parse_args(["executor", "update", "nickname", "new_nickname", "new_command", "errorarg"])
 
 # x clitemnestra executor delete
 def test_parser_executor_delete():
 	with pytest.raises(SystemExit):
 		clitemnestra.clitemnestra.parse_args(["executor", "delete"])
 
-# > clitemnestra executor delete <tag>
-def test_parser_executor_delete_tag():
-	parser = clitemnestra.clitemnestra.parse_args(["executor", "delete", "tag"])
+# > clitemnestra executor delete <nickname>
+def test_parser_executor_delete_nickname():
+	parser = clitemnestra.clitemnestra.parse_args(["executor", "delete", "nickname"])
 	assert (
 		parser.command is 'executor' and
 		parser.executor_command is 'delete' and
-		parser.tag is 'tag'
+		parser.nickname is 'nickname'
 	)
 
-# x clitemnestra executor delete <tag> <errorarg>
-def test_parser_executor_delete_tag_errorarg():
+# x clitemnestra executor delete <nickname> <errorarg>
+def test_parser_executor_delete_nickname_errorarg():
 	with pytest.raises(SystemExit):
-		clitemnestra.clitemnestra.parse_args(["executor", "delete", "tag", "errorarg"])
+		clitemnestra.clitemnestra.parse_args(["executor", "delete", "nickname", "errorarg"])
 
 # Done.

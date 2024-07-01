@@ -6,6 +6,7 @@ import random
 import sys
 
 import tomlkit
+from tomlkit import nl, table
 from rich.columns import Columns
 from rich.console import Console
 from rich.table import Table
@@ -34,13 +35,189 @@ def main():
 	elif parser.command == 'exec':
 		print("Under Construction")
 	elif parser.command == 'script':	# WIP
-		print("Under Construction")
+		command_script(parser)
 	elif parser.command == 'executor':
 		print("Under Construction")
 	else:								# WIP
 		# print("Invalid command")
 		# sys.exit(1)
 		default_info()
+
+
+
+def command_script(parser):
+	print("function: command_script")
+
+	# print(parser)
+
+	if parser.script_command == 'create':
+		command_script_create(parser.nickname, parser.path, parser.executor)
+	elif parser.script_command == 'read':
+		command_script_read(parser.nickname)
+	elif parser.script_command == 'update':
+		command_script_update(parser.nickname, parser.new_nickname, parser.new_path, parser.new_executor)
+	elif parser.script_command == 'delete':
+		command_script_delete(parser.nickname)
+	else:
+		print("Invalid script command")
+		sys.exit(1)
+
+
+
+def command_script_create(nickname, path, executor):
+	print("function: command_script_create")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname already exists
+	for script in content['scripts']:
+		if script['name'] == nickname:
+			print("ERROR: nickname already exists")
+			print("Please use a different nickname")
+			sys.exit(1)
+
+	# check if executor exists
+	executor_exists = False
+	for exec in content['executor']:
+		if exec['name'] == executor:
+			executor_exists = True
+			break
+
+	if not executor_exists:
+		print("ERROR: executor not found")
+		print("Please create the executor first")
+		sys.exit(1)
+
+	script = table()
+	script.add('name', nickname)
+	script.add('path', path)
+	script.add('executor', executor)
+	script.add('tags', [])
+	script.add(nl())
+
+	content['scripts'].append(script)
+
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
+
+
+
+def command_script_read(nickname):
+	print("function: command_script_read")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname exists
+	nickname_exists = False
+	target = None
+	execution = None
+
+	for script in content['scripts']:
+		if script['name'] == nickname:
+			nickname_exists = True
+			target = script
+			break
+
+	if not nickname_exists or target is None:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	console = Console()
+
+	table_script = Table(title="Script: " + nickname, show_lines=True, safe_box=True)
+	table_script.add_column("Variable", style="dodger_blue1", no_wrap=True)
+	table_script.add_column("Value", style="white")
+
+	# table_config.add_row("Name", "[bright_red]" + str(content['config'][items]))
+	table_script.add_row("Name", target['name'], style="bold cyan")
+	table_script.add_row("Path", target['path'], style="bold magenta")
+	table_script.add_row("Executor", target['executor'], style="bold green")
+
+	for items in content['executor']:
+		if items['name'] == target['executor']:
+			table_script.add_row("Executor Command", items['command'], style="green")
+			table_script.add_row("Executor Tags", '\n'.join(items['tags']), style="dodger_blue2")
+
+			execution = items['command'] + " " + target['path']
+
+			break
+
+	table_script.add_row("Script Tags", '\n'.join(target['tags']), style="bold dodger_blue1")
+
+	console.print(table_script)
+
+	if execution is not None:
+		print()
+		execution = Text(execution)
+		execution.stylize("bold gold1")
+		console.print(Columns(["Execution command looks like this:", execution]))
+		print()
+
+
+
+def command_script_update(nickname, new_nickname, new_path, new_executor):
+	print("function: command_script_update")
+	
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if executor exists
+	executor_exists = False
+	for exec in content['executor']:
+		if exec['name'] == new_executor:
+			executor_exists = True
+			break
+
+	if not executor_exists:
+		print("ERROR: executor not found")
+		print("Please create the executor first")
+		sys.exit(1)
+
+	# check if nickname exists
+	nickname_exists = False
+	for script in content['scripts']:
+		# Find and update the script with the name of nickname arg
+		if script['name'] == nickname:
+			nickname_exists = True
+			script["name"] = new_nickname
+			script["path"] = new_path
+			script["executor"] = new_executor
+			break
+
+	if not nickname_exists:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	# write content to file
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
+
+
+
+def command_script_delete(nickname):
+	print("function: command_script_delete")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname exists
+	nickname_exists = False
+	for script in content['scripts']:
+		if script['name'] == nickname:
+			nickname_exists = True
+			break
+
+	if not nickname_exists:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	# Find and remove the script with the name of nickname arg
+	for i, script in enumerate(content["scripts"]):
+		if script["name"] == nickname:
+			del content["scripts"][i]
+			break
+
+	# write content to file
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
 
 
 

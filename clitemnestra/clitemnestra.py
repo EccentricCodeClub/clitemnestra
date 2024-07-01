@@ -34,10 +34,10 @@ def main():
 		command_config()
 	elif parser.command == 'exec':
 		print("Under Construction")
-	elif parser.command == 'script':	# WIP
+	elif parser.command == 'script':	# Done
 		command_script(parser)
-	elif parser.command == 'executor':
-		print("Under Construction")
+	elif parser.command == 'executor':	# Done
+		command_executor(parser)
 	else:								# WIP
 		# print("Invalid command")
 		# sys.exit(1)
@@ -45,10 +45,136 @@ def main():
 
 
 
+def command_executor(parser):
+	print("function: command_executor")
+
+	if parser.executor_command == 'create':
+		command_executor_create(parser.nickname, parser.runner)
+	elif parser.executor_command == 'read':
+		command_executor_read(parser.nickname)
+	elif parser.executor_command == 'update':
+		command_executor_update(parser.nickname, parser.new_nickname, parser.new_runner)
+	elif parser.executor_command == 'delete':
+		command_executor_delete(parser.nickname)
+	else:
+		print("Invalid executor command")
+		sys.exit(1)
+
+
+
+def command_executor_create(nickname, runner):
+	print("function: command_executor_create")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if name already exists
+	for executor in content['executor']:
+		if executor['name'] == nickname:
+			print("ERROR: name already exists")
+			print("Please use a different name")
+			sys.exit(1)
+
+	executor = table()
+	executor.add('name', nickname)
+	executor.add('command', runner)
+	executor.add('tags', [])
+	executor.add(nl())
+
+	content['executor'].append(executor)
+
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
+
+
+
+def command_executor_read(nickname):
+	print("function: command_executor_read")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname exists
+	nickname_exists = False
+	target = None
+
+	for executor in content['executor']:
+		if executor['name'] == nickname:
+			nickname_exists = True
+			target = executor
+			break
+
+	if not nickname_exists or target is None:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	console = Console()
+
+	table_executor = Table(title="Executor: " + nickname, show_lines=True, safe_box=True)
+	table_executor.add_column("Variable", style="dodger_blue1", no_wrap=True)
+	table_executor.add_column("Value", style="white")
+
+	table_executor.add_row("Name", target['name'], style="bold cyan")
+	table_executor.add_row("Command", target['command'], style="bold green")
+	table_executor.add_row("Tags", '\n'.join(target['tags']), style="bold dodger_blue1")
+
+	console.print(table_executor)
+
+
+
+def command_executor_update(nickname, new_nickname, new_runner):
+	print("function: command_executor_update")
+	
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname exists
+	nickname_exists = False
+	for executor in content['executor']:
+		# Find and update the executor
+		if executor['name'] == nickname:
+			nickname_exists = True
+			executor["name"] = new_nickname
+			executor["command"] = new_runner
+			break
+
+	if not nickname_exists:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	# write content to file
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
+
+
+
+def command_executor_delete(nickname):
+	print("function: command_executor_delete")
+
+	content = check_toml_integrity(CONFIG_FILE_PATH)
+
+	# check if nickname exists
+	nickname_exists = False
+	for executor in content['executor']:
+		if executor['name'] == nickname:
+			nickname_exists = True
+			break
+
+	if not nickname_exists:
+		print("ERROR: nickname not found")
+		sys.exit(1)
+
+	# Find and remove the script with the name of nickname arg
+	for i, executor in enumerate(content["executor"]):
+		if executor["name"] == nickname:
+			del content["executor"][i]
+			break
+
+	# write content to file
+	with open(CONFIG_FILE_PATH, 'w') as f:
+		f.write(tomlkit.dumps(content))
+
+
+
 def command_script(parser):
 	print("function: command_script")
-
-	# print(parser)
 
 	if parser.script_command == 'create':
 		command_script_create(parser.nickname, parser.path, parser.executor)
@@ -487,10 +613,10 @@ def parse_args(args):
 	# 		> clitemnestra script update <nickname> <new_nickname> <new_path> <new_executor>
 	# 		> clitemnestra script delete <nickname>
 	# 	> clitemnestra executor
-	# 		> clitemnestra executor create <tag> <command>
-	# 		> clitemnestra executor read <tag>
-	# 		> clitemnestra executor update <tag> <new_tag> <new_command>
-	# 		> clitemnestra executor delete <tag>
+	# 		> clitemnestra executor create <nickname> <command>
+	# 		> clitemnestra executor read <nickname>
+	# 		> clitemnestra executor update <nickname> <new_nickname> <new_command>
+	# 		> clitemnestra executor delete <nickname>
 
 	# > clitemnestra list <tag?>
 	list_parser = subparsers.add_parser('list', help='list scripts')
@@ -541,24 +667,24 @@ def parse_args(args):
 	executor_parser = subparsers.add_parser('executor', help='manage executors')
 	executor_subparsers = executor_parser.add_subparsers(dest='executor_command')
 
-	# > clitemnestra executor create <tag> <command>
+	# > clitemnestra executor create <nickname> <runner>
 	create_executor_parser = executor_subparsers.add_parser('create', help='create a new executor')
-	create_executor_parser.add_argument('tag', type=str, help='tag for the executor')
+	create_executor_parser.add_argument('nickname', type=str, help='nickname for the executor')
 	create_executor_parser.add_argument('runner', type=str, help='command for the executor')
 
-	# > clitemnestra executor read <tag>
+	# > clitemnestra executor read <nickname>
 	read_executor_parser = executor_subparsers.add_parser('read', help='read a executor')
-	read_executor_parser.add_argument('tag', type=str, help='tag of the executor')
+	read_executor_parser.add_argument('nickname', type=str, help='nickname of the executor')
 
-	# > clitemnestra executor update <tag> <new_tag> <new_command>
+	# > clitemnestra executor update <nickname> <new_nickname> <new_runner>
 	update_executor_parser = executor_subparsers.add_parser('update', help='update a executor')
-	update_executor_parser.add_argument('tag', type=str, help='tag of the executor')
-	update_executor_parser.add_argument('new_tag', type=str, help='new tag for the executor')
+	update_executor_parser.add_argument('nickname', type=str, help='nickname of the executor')
+	update_executor_parser.add_argument('new_nickname', type=str, help='new nickname for the executor')
 	update_executor_parser.add_argument('new_runner', type=str, help='new command for the executor')
 
-	# > clitemnestra executor delete <tag>
+	# > clitemnestra executor delete <nickname>
 	delete_executor_parser = executor_subparsers.add_parser('delete', help='delete a executor')
-	delete_executor_parser.add_argument('tag', type=str, help='tag of the executor')
+	delete_executor_parser.add_argument('nickname', type=str, help='nickname of the executor')
 
 	try:
 		parsed_args = parser.parse_args(args)

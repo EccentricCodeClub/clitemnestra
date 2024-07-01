@@ -5,12 +5,14 @@ import os
 import random
 import sys
 
-import tomlkit
 from tomlkit import nl, table
 from rich.columns import Columns
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
+
+from clitemnestra.toml import check_toml_integrity
+from clitemnestra.toml import write_toml
 
 # CONSTANTS
 CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
@@ -118,8 +120,7 @@ def command_executor_create(nickname, runner):
 
 	content['executor'].append(executor)
 
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -176,8 +177,7 @@ def command_executor_update(nickname, new_nickname, new_runner):
 		sys.exit(1)
 
 	# write content to file
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -204,8 +204,7 @@ def command_executor_delete(nickname):
 			break
 
 	# write content to file
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -259,8 +258,7 @@ def command_script_create(nickname, path, executor):
 
 	content['scripts'].append(script)
 
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -350,8 +348,7 @@ def command_script_update(nickname, new_nickname, new_path, new_executor):
 		sys.exit(1)
 
 	# write content to file
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -378,8 +375,7 @@ def command_script_delete(nickname):
 			break
 
 	# write content to file
-	with open(CONFIG_FILE_PATH, 'w') as f:
-		f.write(tomlkit.dumps(content))
+	write_toml(CONFIG_FILE_PATH, content)
 
 
 
@@ -578,55 +574,6 @@ def flatten(obj):
 			yield from flatten(val)
 	else:
 		yield obj
-
-
-
-def check_toml_integrity(file_path):
-	# print("function: check_toml_integrity")
-
-	# check if file exists
-	try:
-		with open(file_path, 'r') as f:
-			content = f.read()
-	except FileNotFoundError as e:
-		print("ERROR: FileNotFoundError")
-		print(e)
-		sys.exit(1)
-	except Exception as e:
-		print("ERROR: General Exception")
-		print(e)
-		sys.exit(1)
-
-	# check if toml is valid
-	try:
-		doc = tomlkit.parse(content)
-	except tomlkit.exceptions.TOMLKitError as e:
-		print("ERROR: tomlkit.exceptions.TOMLKitError")
-		print(e)
-		sys.exit(1)
-	except Exception as e:
-		print("ERROR: General Exception")
-		print(e)
-		sys.exit(1)
-
-	# check if toml scripts have valid keys
-	if doc.get('scripts') is not None:
-		for script in doc['scripts']:
-			if script.get('name') is None or \
-				script.get('path') is None or \
-				script.get('executor') is None:
-				print("ERROR: Invalid script key")
-				sys.exit(1)
-
-	# check if toml executors have valid keys
-	if doc.get('executor') is not None:
-		for executor in doc['executor']:
-			if executor.get('name') is None or \
-				executor.get('command') is None:
-				print("ERROR: Invalid executor key")
-				sys.exit(1)
-
-	return doc
 
 
 

@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import os
-import random
 import sys
 
 from tomlkit import nl, table

@@ -8,10 +8,23 @@ from tomlkit import parse
 def check_toml_integrity(file_path):
 	# print("function: check_toml_integrity")
 
+	doc = read_toml(file_path)
+
+	content = check_syntax(doc)
+
+	check_valid_keys(content)
+
+	return content
+
+
+
+def read_toml(file_path):
+	# print("function: read_toml")
+
 	# check if file exists
 	try:
 		with open(file_path, 'r') as f:
-			content = f.read()
+			doc = f.read()
 	except FileNotFoundError as e:
 		print("ERROR: FileNotFoundError")
 		print(e)
@@ -21,9 +34,16 @@ def check_toml_integrity(file_path):
 		print(e)
 		sys.exit(1)
 
+	return doc
+
+
+
+def check_syntax(doc):
+	# print("function: check_syntax")
+
 	# check if toml is valid
 	try:
-		doc = parse(content)
+		content = parse(doc)
 	except exceptions.TOMLKitError as e:
 		print("ERROR: tomlkit.exceptions.TOMLKitError")
 		print(e)
@@ -33,9 +53,16 @@ def check_toml_integrity(file_path):
 		print(e)
 		sys.exit(1)
 
+	return content
+
+
+
+def check_valid_keys(content):
+	# print("function: check_valid_keys")
+
 	# check if toml scripts have valid keys
-	if doc.get('scripts') is not None:
-		for script in doc['scripts']:
+	if content.get('scripts') is not None:
+		for script in content['scripts']:
 			if script.get('name') is None or \
 				script.get('path') is None or \
 				script.get('executor') is None:
@@ -43,14 +70,12 @@ def check_toml_integrity(file_path):
 				sys.exit(1)
 
 	# check if toml executors have valid keys
-	if doc.get('executor') is not None:
-		for executor in doc['executor']:
+	if content.get('executor') is not None:
+		for executor in content['executor']:
 			if executor.get('name') is None or \
 				executor.get('command') is None:
 				print("ERROR: Invalid executor key")
 				sys.exit(1)
-
-	return doc
 
 
 

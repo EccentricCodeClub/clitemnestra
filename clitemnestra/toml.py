@@ -65,7 +65,8 @@ def check_valid_keys(content):
 		for script in content['scripts']:
 			if script.get('name') is None or \
 				script.get('path') is None or \
-				script.get('executor') is None:
+				script.get('executor') is None or \
+				script.get('tags') is None:
 				print("ERROR: Invalid script key")
 				sys.exit(1)
 
@@ -73,7 +74,8 @@ def check_valid_keys(content):
 	if content.get('executor') is not None:
 		for executor in content['executor']:
 			if executor.get('name') is None or \
-				executor.get('command') is None:
+				executor.get('command') is None or \
+				executor.get('tags') is None:
 				print("ERROR: Invalid executor key")
 				sys.exit(1)
 
@@ -81,6 +83,8 @@ def check_valid_keys(content):
 
 def write_toml(CONFIG_FILE_PATH, content):
 	# print("function: write_toml")
+
+	check_valid_keys(check_syntax(dumps(content)))
 
 	try:
 		with open(CONFIG_FILE_PATH, 'w') as f:

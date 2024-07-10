@@ -45,7 +45,6 @@ from clitemnestra.toml import write_toml
 
 # Test Cases:
 
-# check_toml_integrity(file_path):
 # x check_toml_integrity pass error path
 def test_check_toml_integrity_error_path():
 	with pytest.raises(SystemExit):
@@ -281,7 +280,6 @@ def test_check_valid_keys_right_scripts_right_executor():
 		}
 	)
 
-
 # x write_toml pass error path
 def test_write_toml_error_path():
 	with pytest.raises(SystemExit):
@@ -302,11 +300,6 @@ def test_write_toml_right_file_right_content_error_keys():
 	with pytest.raises(SystemExit):
 		with patch('builtins.open', mock):
 			write_toml('filename.toml', data)
-
-		mock.assert_called_once_with('filename.toml', 'w')
-		handle = mock()
-		handle.write.assert_called_once_with(dumps(data))
-
 
 # v write_toml pass RIGHT path, RIGHT keys
 def test_write_toml_right_file_right_content_right_keys():

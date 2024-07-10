@@ -99,16 +99,8 @@ def parse_args(args):
 
 	try:
 		parsed_args = parser.parse_args(args)
-	except argparse.ArgumentError as e:
-		print("ERROR: argparse.ArgumentError")
-		print(e)
-		sys.exit(1)
-	except argparse.ArgumentTypeError as e:
-		print("ERROR: argparse.ArgumentTypeError")
-		print(e)
-		sys.exit(1)
 	except Exception as e:
-		print("ERROR: General Exception")
+		# print("ERROR: General Exception")
 		print(e)
 		sys.exit(1)
 

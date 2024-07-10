@@ -1,7 +1,6 @@
 import sys
 
 from tomlkit import dumps
-from tomlkit import exceptions
 from tomlkit import parse
 
 
@@ -9,9 +8,7 @@ def check_toml_integrity(file_path):
 	# print("function: check_toml_integrity")
 
 	doc = read_toml(file_path)
-
 	content = check_syntax(doc)
-
 	check_valid_keys(content)
 
 	return content
@@ -25,10 +22,6 @@ def read_toml(file_path):
 	try:
 		with open(file_path, 'r') as f:
 			doc = f.read()
-	except FileNotFoundError as e:
-		print("ERROR: FileNotFoundError")
-		print(e)
-		sys.exit(1)
 	except Exception as e:
 		print("ERROR: General Exception")
 		print(e)
@@ -44,10 +37,6 @@ def check_syntax(doc):
 	# check if toml is valid
 	try:
 		content = parse(doc)
-	except exceptions.TOMLKitError as e:
-		print("ERROR: tomlkit.exceptions.TOMLKitError")
-		print(e)
-		sys.exit(1)
 	except Exception as e:
 		print("ERROR: General Exception")
 		print(e)

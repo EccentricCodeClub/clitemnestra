@@ -78,7 +78,7 @@ from clitemnestra.parser import parse_args
 # > clitemnestra
 def test_parser_none():
 	parser = parse_args([])
-	assert parser.command is None
+	assert parser.command == None
 
 # x clitemnestra <errorarg>
 def test_parser_errorarg():
@@ -88,12 +88,12 @@ def test_parser_errorarg():
 # > clitemnestra list
 def test_parser_list():
 	parser = parse_args(["list"])
-	assert parser.command is 'list' and parser.tag is None
+	assert parser.command == 'list' and parser.tag == None
 
 # > clitemnestra list <tag>
 def test_parser_list_tag():
 	parser = parse_args(["list", "tag"])
-	assert parser.command is 'list' and parser.tag is 'tag'
+	assert parser.command == 'list' and parser.tag == 'tag'
 
 # x clitemnestra list <tag> <errortag>
 def test_parser_list_tag_errortag():
@@ -108,7 +108,7 @@ def test_parser_search():
 # > clitemnestra search <term>
 def test_parser_search_term():
 	parser = parse_args(["search", "term"])
-	assert parser.command is 'search' and parser.term is 'term'
+	assert parser.command == 'search' and parser.term == 'term'
 
 # x clitemnestra search <term> <errorarg>
 def test_parser_search_term_errorarg():
@@ -118,7 +118,7 @@ def test_parser_search_term_errorarg():
 # > clitemnestra edit
 def test_parser_edit():
 	parser = parse_args(["edit"])
-	assert parser.command is 'edit'
+	assert parser.command == 'edit'
 
 # x clitemnestra edit <errorarg>
 def test_parser_edit_errorarg():
@@ -128,7 +128,7 @@ def test_parser_edit_errorarg():
 # > clitemnestra config
 def test_parser_config():
 	parser = parse_args(["config"])
-	assert parser.command is 'config'
+	assert parser.command == 'config'
 
 # x clitemnestra config <errorarg>
 def test_parser_config_errorarg():
@@ -143,7 +143,7 @@ def test_parser_exec():
 # > clitemnestra exec <nickname>
 def test_parser_exec_nickname():
 	parser = parse_args(["exec", "nickname"])
-	assert parser.command is 'exec' and parser.nickname is 'nickname'
+	assert parser.command == 'exec' and parser.nickname == 'nickname'
 
 # x clitemnestra exec <nickname> <errorarg>
 def test_parser_exec_nickname_errorarg():
@@ -153,7 +153,7 @@ def test_parser_exec_nickname_errorarg():
 # > clitemnestra script
 def test_parser_script():
 	parser = parse_args(["script"])
-	assert parser.command is 'script'
+	assert parser.command == 'script'
 
 # x clitemnestra script <errorarg>
 def test_parser_script_errorarg():
@@ -179,11 +179,11 @@ def test_parser_script_create_nickname_path():
 def test_parser_script_create_nickname_path_executor():
 	parser = parse_args(["script", "create", "nickname", "path", "executor"])
 	assert (
-		parser.command is 'script' and
-		parser.script_command is 'create' and
-		parser.nickname is 'nickname' and
-		parser.path is 'path' and
-		parser.executor is 'executor'
+		parser.command == 'script' and
+		parser.script_command == 'create' and
+		parser.nickname == 'nickname' and
+		parser.path == 'path' and
+		parser.executor == 'executor'
 	)
 
 # x clitemnestra script create <nickname> <path> <executor> <errorarg>
@@ -200,9 +200,9 @@ def test_parser_script_read():
 def test_parser_script_read_nickname():
 	parser = parse_args(["script", "read", "nickname"])
 	assert (
-		parser.command is 'script' and
-		parser.script_command is 'read' and
-		parser.nickname is 'nickname'
+		parser.command == 'script' and
+		parser.script_command == 'read' and
+		parser.nickname == 'nickname'
 	)
 
 # x clitemnestra script read <nickname> <errorarg>
@@ -234,12 +234,12 @@ def test_parser_script_update_nickname_new_nickname_new_path():
 def test_parser_script_update_nickname_new_nickname_new_path_new_executor():
 	parser = parse_args(["script", "update", "nickname", "new_nickname", "new_path", "new_executor"])
 	assert (
-		parser.command is 'script' and
-		parser.script_command is 'update' and
-		parser.nickname is 'nickname' and
-		parser.new_nickname is 'new_nickname' and
-		parser.new_path is 'new_path' and
-		parser.new_executor is 'new_executor'
+		parser.command == 'script' and
+		parser.script_command == 'update' and
+		parser.nickname == 'nickname' and
+		parser.new_nickname == 'new_nickname' and
+		parser.new_path == 'new_path' and
+		parser.new_executor == 'new_executor'
 	)
 
 # x clitemnestra script update <nickname> <new_nickname> <new_path> <new_executor> <errorarg>
@@ -256,9 +256,9 @@ def test_parser_script_delete():
 def test_parser_script_delete_nickname():
 	parser = parse_args(["script", "delete", "nickname"])
 	assert (
-		parser.command is 'script' and
-		parser.script_command is 'delete' and
-		parser.nickname is 'nickname'
+		parser.command == 'script' and
+		parser.script_command == 'delete' and
+		parser.nickname == 'nickname'
 	)
 
 # x clitemnestra script delete <nickname> <errorarg>
@@ -269,7 +269,7 @@ def test_parser_script_delete_nickname_errorarg():
 # > clitemnestra executor
 def test_parser_executor():
 	parser = parse_args(["executor"])
-	assert parser.command is 'executor'
+	assert parser.command == 'executor'
 
 # x clitemnestra executor <errorarg>
 def test_parser_executor_errorarg():
@@ -290,10 +290,10 @@ def test_parser_executor_create_nickname():
 def test_parser_executor_create_nickname_command():
 	parser = parse_args(["executor", "create", "nickname", "command"])
 	assert (
-		parser.command is 'executor' and
-		parser.executor_command is 'create' and
-		parser.nickname is 'nickname' and
-		parser.runner is 'command'
+		parser.command == 'executor' and
+		parser.executor_command == 'create' and
+		parser.nickname == 'nickname' and
+		parser.runner == 'command'
 	)
 
 # x clitemnestra executor create <nickname> <command> <errorarg>
@@ -310,9 +310,9 @@ def test_parser_executor_read():
 def test_parser_executor_read_nickname():
 	parser = parse_args(["executor", "read", "nickname"])
 	assert (
-		parser.command is 'executor' and
-		parser.executor_command is 'read' and
-		parser.nickname is 'nickname'
+		parser.command == 'executor' and
+		parser.executor_command == 'read' and
+		parser.nickname == 'nickname'
 	)
 
 # x clitemnestra executor read <nickname> <errorarg>
@@ -339,11 +339,11 @@ def test_parser_executor_update_nickname_new_nickname():
 def test_parser_executor_update_nickname_new_nickname_new_command():
 	parser = parse_args(["executor", "update", "nickname", "new_nickname", "new_command"])
 	assert (
-		parser.command is 'executor' and
-		parser.executor_command is 'update' and
-		parser.nickname is 'nickname' and
-		parser.new_nickname is 'new_nickname' and
-		parser.new_runner is 'new_command'
+		parser.command == 'executor' and
+		parser.executor_command == 'update' and
+		parser.nickname == 'nickname' and
+		parser.new_nickname == 'new_nickname' and
+		parser.new_runner == 'new_command'
 	)
 
 # x clitemnestra executor update <nickname> <new_nickname> <new_command> <errorarg>
@@ -360,9 +360,9 @@ def test_parser_executor_delete():
 def test_parser_executor_delete_nickname():
 	parser = parse_args(["executor", "delete", "nickname"])
 	assert (
-		parser.command is 'executor' and
-		parser.executor_command is 'delete' and
-		parser.nickname is 'nickname'
+		parser.command == 'executor' and
+		parser.executor_command == 'delete' and
+		parser.nickname == 'nickname'
 	)
 
 # x clitemnestra executor delete <nickname> <errorarg>

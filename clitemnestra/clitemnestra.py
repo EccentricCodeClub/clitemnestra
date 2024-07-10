@@ -13,6 +13,8 @@ from clitemnestra.parser import parse_args
 from clitemnestra.toml import check_toml_integrity
 from clitemnestra.toml import write_toml
 from clitemnestra.info import info
+from clitemnestra.rich import rich_list_search
+from clitemnestra.rich import rich_config
 
 # CONSTANTS
 CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
@@ -413,25 +415,16 @@ def command_config():
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
-	console = Console()
-
-	table_config = Table(title="Config File", show_lines=True, safe_box=True)
-	table_config.add_column("Variable", style="dodger_blue1", no_wrap=True)
-	table_config.add_column("Value", style="white")
+	matrix_config = []
 
 	try:
 		for items in content['config']:
-			if content['config'][items] is False:
-				table_config.add_row(items, "[bright_red]" + str(content['config'][items]))
-			elif content['config'][items] is True:
-				table_config.add_row(items, "[bright_green]" + str(content['config'][items]))
-			else:
-				table_config.add_row(items, str(content['config'][items]))
+			matrix_config.append([items, content['config'][items]])
 	except Exception as e:
 		print("No config found")
 		sys.exit(1)
 
-	console.print(table_config)
+	rich_config(matrix_config)
 
 
 
@@ -440,25 +433,16 @@ def command_search(term):
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
-	console = Console()
-
-	table_script = Table(title="Scripts", show_lines=True, safe_box=True)
-	table_script.add_column("Name", style="cyan", no_wrap=True)
-	table_script.add_column("Path", style="magenta")
-	table_script.add_column("Executor", style="green")
-	table_script.add_column("Tag", style="dodger_blue1")
-
-	table_executor = Table(title="Executors", show_lines=True, safe_box=True)
-	table_executor.add_column("Name", style="cyan", no_wrap=True)
-	table_executor.add_column("Command", style="green")
-	table_executor.add_column("Tag", style="dodger_blue1")
+	matrix_scripts = []
+	matrix_executors = []
 
 	try:
 		for script in content['scripts']:
 			flatten_script = set(flatten(script))
 			for item in flatten_script:
 				if term in item:
-					table_script.add_row(script['name'], script['path'], script['executor'], '\n'.join(script['tags']))
+					matrix_scripts.append([script['name'], script['path'], script['executor'], '\n'.join(script['tags'])])
+					
 					break
 	except Exception as e:
 		print("No scripts found")
@@ -468,12 +452,12 @@ def command_search(term):
 			flatten_executor = set(flatten(executor))
 			for item in flatten_executor:
 				if term in item:
-					table_executor.add_row(executor['name'], executor['command'], '\n'.join(executor['tags']))
+					matrix_executors.append([executor['name'], executor['command'], '\n'.join(executor['tags'])])
 					break
 	except Exception as e:
 		print("No executors found")
 
-	console.print(Columns([table_script, table_executor]))
+	rich_list_search(matrix_scripts, matrix_executors, columns=True)
 
 
 
@@ -482,18 +466,8 @@ def command_list(tag):
 
 	content = check_toml_integrity(CONFIG_FILE_PATH)
 
-	console = Console()
-
-	table_script = Table(title="Scripts", show_lines=True, safe_box=True)
-	table_script.add_column("Name", style="cyan", no_wrap=True)
-	table_script.add_column("Path", style="magenta")
-	table_script.add_column("Executor", style="green")
-	table_script.add_column("Tag", style="dodger_blue1")
-
-	table_executor = Table(title="Executors", show_lines=True, safe_box=True)
-	table_executor.add_column("Name", style="cyan", no_wrap=True)
-	table_executor.add_column("Command", style="green")
-	table_executor.add_column("Tag", style="dodger_blue1")
+	matrix_scripts = []
+	matrix_executors = []
 
 	if tag:
 		print(f"Filtering by tag: {tag}\n")
@@ -501,18 +475,18 @@ def command_list(tag):
 	try:
 		for script in content['scripts']:
 			if tag is None or tag in script['tags']:
-				table_script.add_row(script['name'], script['path'], script['executor'], '\n'.join(script['tags']))
+				matrix_scripts.append([script['name'], script['path'], script['executor'], '\n'.join(script['tags'])])
 	except Exception as e:
 		print("No scripts found")
 
 	try:
 		for executor in content['executor']:
 			if tag is None or tag in executor['tags']:
-				table_executor.add_row(executor['name'], executor['command'], '\n'.join(executor['tags']))
+				matrix_executors.append([executor['name'], executor['command'], '\n'.join(executor['tags'])])
 	except Exception as e:
 		print("No executors found")
 
-	console.print(Columns([table_script, table_executor]))
+	rich_list_search(matrix_scripts, matrix_executors, columns=True)
 
 
 

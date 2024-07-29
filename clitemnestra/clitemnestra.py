@@ -10,11 +10,16 @@ from rich.table import Table
 from rich.text import Text
 
 from clitemnestra.parser import parse_args
+
 from clitemnestra.toml import check_toml_integrity
 from clitemnestra.toml import write_toml
+
 from clitemnestra.info import info
+
 from clitemnestra.rich import rich_list_search
 from clitemnestra.rich import rich_config
+from clitemnestra.rich import rich_execution
+from clitemnestra.rich import rich_script_read
 
 # CONSTANTS
 CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
@@ -284,35 +289,17 @@ def command_script_read(nickname):
 		print("ERROR: nickname not found")
 		sys.exit(1)
 
-	console = Console()
-
-	table_script = Table(title="Script: " + nickname, show_lines=True, safe_box=True)
-	table_script.add_column("Variable", style="dodger_blue1", no_wrap=True)
-	table_script.add_column("Value", style="white")
-
-	# table_config.add_row("Name", "[bright_red]" + str(content['config'][items]))
-	table_script.add_row("Name", target['name'], style="bold cyan")
-	table_script.add_row("Path", target['path'], style="bold magenta")
-	table_script.add_row("Executor", target['executor'], style="bold green")
+	rich_script_read(nickname, target, content['executor'])
 
 	for items in content['executor']:
 		if items['name'] == target['executor']:
-			table_script.add_row("Executor Command", items['command'], style="green")
-			table_script.add_row("Executor Tags", '\n'.join(items['tags']), style="dodger_blue2")
-
 			execution = items['command'] + " " + target['path']
 
 			break
 
-	table_script.add_row("Script Tags", '\n'.join(target['tags']), style="bold dodger_blue1")
-
-	console.print(table_script)
-
 	if execution is not None:
 		print()
-		execution = Text(execution)
-		execution.stylize("bold gold1")
-		console.print(Columns(["Execution command looks like this:", execution]))
+		rich_execution(execution)
 		print()
 
 

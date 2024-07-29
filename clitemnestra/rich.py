@@ -68,3 +68,44 @@ def rich_config(matrix_config):
 
 	console.print(table_config)
 
+
+
+def rich_script_read(nickname, target_script, target_executor):
+	# print("function: rich_script_read")
+
+	console = Console()
+
+	table_script = Table(title="Script: " + nickname, show_lines=True, safe_box=True)
+	table_script.add_column("Variable", style="dodger_blue1", no_wrap=True)
+	table_script.add_column("Value", style="white")
+
+	# table_config.add_row("Name", "[bright_red]" + str(content['config'][items]))
+	table_script.add_row("Name", target_script['name'], style="bold cyan")
+	table_script.add_row("Path", target_script['path'], style="bold magenta")
+	table_script.add_row("Executor", target_script['executor'], style="bold green")
+
+	for items in target_executor:
+		if items['name'] == target_script['executor']:
+			table_script.add_row("Executor Command", items['command'], style="green")
+			table_script.add_row("Executor Tags", '\n'.join(items['tags']), style="dodger_blue2")
+
+			break
+
+	table_script.add_row("Script Tags", '\n'.join(target_script['tags']), style="bold dodger_blue1")
+
+	console.print(table_script)
+
+
+
+def rich_execution(execution):
+	# print("function: rich_execution")
+
+	console = Console()
+
+	try:
+		execution = Text(execution)
+		execution.stylize("bold gold1")
+		console.print(Columns(["Execution command looks like this:", execution]))
+	except Exception as e:
+		print(e)
+		sys.exit(1)

@@ -4,10 +4,6 @@ import os
 import sys
 
 from tomlkit import nl, table
-from rich.columns import Columns
-from rich.console import Console
-from rich.table import Table
-from rich.text import Text
 
 from clitemnestra.parser import parse_args
 
@@ -20,6 +16,7 @@ from clitemnestra.rich import rich_list_search
 from clitemnestra.rich import rich_config
 from clitemnestra.rich import rich_execution
 from clitemnestra.rich import rich_script_read
+from clitemnestra.rich import rich_executor_read
 
 # CONSTANTS
 CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
@@ -150,17 +147,10 @@ def command_executor_read(nickname):
 		print("ERROR: nickname not found")
 		sys.exit(1)
 
-	console = Console()
+	matrix_executor = []
+	matrix_executor.append([target['name'], target['command'], '\n'.join(target['tags'])])
 
-	table_executor = Table(title="Executor: " + nickname, show_lines=True, safe_box=True)
-	table_executor.add_column("Variable", style="dodger_blue1", no_wrap=True)
-	table_executor.add_column("Value", style="white")
-
-	table_executor.add_row("Name", target['name'], style="bold cyan")
-	table_executor.add_row("Command", target['command'], style="bold green")
-	table_executor.add_row("Tags", '\n'.join(target['tags']), style="bold dodger_blue1")
-
-	console.print(table_executor)
+	rich_executor_read(nickname, matrix_executor)
 
 
 

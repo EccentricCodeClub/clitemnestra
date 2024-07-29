@@ -79,21 +79,45 @@ def rich_script_read(nickname, target_script, target_executor):
 	table_script.add_column("Variable", style="dodger_blue1", no_wrap=True)
 	table_script.add_column("Value", style="white")
 
-	# table_config.add_row("Name", "[bright_red]" + str(content['config'][items]))
-	table_script.add_row("Name", target_script['name'], style="bold cyan")
-	table_script.add_row("Path", target_script['path'], style="bold magenta")
-	table_script.add_row("Executor", target_script['executor'], style="bold green")
+	try:
+		table_script.add_row("Name", target_script['name'], style="bold cyan")
+		table_script.add_row("Path", target_script['path'], style="bold magenta")
+		table_script.add_row("Executor", target_script['executor'], style="bold green")
 
-	for items in target_executor:
-		if items['name'] == target_script['executor']:
-			table_script.add_row("Executor Command", items['command'], style="green")
-			table_script.add_row("Executor Tags", '\n'.join(items['tags']), style="dodger_blue2")
+		for items in target_executor:
+			if items['name'] == target_script['executor']:
+				table_script.add_row("Executor Command", items['command'], style="green")
+				table_script.add_row("Executor Tags", '\n'.join(items['tags']), style="dodger_blue2")
+				break
 
-			break
-
-	table_script.add_row("Script Tags", '\n'.join(target_script['tags']), style="bold dodger_blue1")
+		table_script.add_row("Script Tags", '\n'.join(target_script['tags']), style="bold dodger_blue1")
+	except Exception as e:
+		print(e)
+		sys.exit(1)
 
 	console.print(table_script)
+
+
+
+def rich_executor_read(nickname, matrix_executor):
+	# print("function: rich_executor_read")
+
+	console = Console()
+
+	table_executor = Table(title="Executor: " + nickname, show_lines=True, safe_box=True)
+	table_executor.add_column("Variable", style="dodger_blue1", no_wrap=True)
+	table_executor.add_column("Value", style="white")
+
+	try:
+		for line in matrix_executor:
+			table_executor.add_row("Name", line[0], style="bold cyan")
+			table_executor.add_row("Command", line[1], style="bold green")
+			table_executor.add_row("Tags", line[2], style="bold dodger_blue1")
+	except Exception as e:
+		print(e)
+		sys.exit(1)
+
+	console.print(table_executor)
 
 
 
@@ -109,3 +133,5 @@ def rich_execution(execution):
 	except Exception as e:
 		print(e)
 		sys.exit(1)
+
+

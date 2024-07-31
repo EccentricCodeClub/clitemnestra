@@ -1,7 +1,9 @@
 import sys
 
 from tomlkit import dumps
+from tomlkit import nl
 from tomlkit import parse
+from tomlkit import table
 
 
 def check_toml_integrity(file_path):
@@ -82,3 +84,48 @@ def write_toml(CONFIG_FILE_PATH, content):
 		print("ERROR: General Exception")
 		print(e)
 		sys.exit(1)
+
+
+
+def toml_script_create(CONFIG_FILE_PATH, content, new_script):
+	# print("function: toml_script_create")
+
+	for item in new_script:
+		try:
+			script = table()
+			script.add('name', item['name'])
+			script.add('path', item['path'])
+			script.add('executor', item['executor'])
+			script.add('tags', item['tags'])
+			script.add(nl())
+
+			content['scripts'].append(script)
+
+			write_toml(CONFIG_FILE_PATH, content)
+		except Exception as e:
+			print("ERROR: General Exception")
+			print(e)
+			sys.exit(1)
+
+
+
+def toml_executor_create(CONFIG_FILE_PATH, content, new_executor):
+	# print("function: toml_executor_create")
+
+	for item in new_executor:
+		try:
+			executor = table()
+			executor.add('name', item['name'])
+			executor.add('command', item['command'])
+			executor.add('tags', item['tags'])
+			executor.add(nl())
+
+			content['executor'].append(executor)
+
+			write_toml(CONFIG_FILE_PATH, content)
+		except Exception as e:
+			print("ERROR: General Exception")
+			print(e)
+			sys.exit(1)
+
+

@@ -3,12 +3,12 @@
 import os
 import sys
 
-from tomlkit import nl, table
-
 from clitemnestra.parser import parse_args
 
 from clitemnestra.toml import check_toml_integrity
 from clitemnestra.toml import write_toml
+from clitemnestra.toml import toml_script_create
+from clitemnestra.toml import toml_executor_create
 
 from clitemnestra.info import info
 
@@ -116,16 +116,15 @@ def command_executor_create(nickname, runner):
 			print("Please use a different name")
 			sys.exit(1)
 
-	executor = table()
-	executor.add('name', nickname)
-	executor.add('command', runner)
-	executor.add('tags', [])
-	executor.add(nl())
+	new_executor = [
+		{
+			'name': nickname,
+			'command': runner,
+			'tags': []
+		}
+	]
 
-	content['executor'].append(executor)
-
-	write_toml(CONFIG_FILE_PATH, content)
-
+	toml_executor_create(CONFIG_FILE_PATH, content, new_executor)
 
 
 def command_executor_read(nickname):
@@ -246,17 +245,16 @@ def command_script_create(nickname, path, executor):
 		print("Please create the executor first")
 		sys.exit(1)
 
-	script = table()
-	script.add('name', nickname)
-	script.add('path', path)
-	script.add('executor', executor)
-	script.add('tags', [])
-	script.add(nl())
+	new_script = [
+		{
+			'name': nickname,
+			'path': path,
+			'executor': executor,
+			'tags': []
+		}
+	]
 
-	content['scripts'].append(script)
-
-	write_toml(CONFIG_FILE_PATH, content)
-
+	toml_script_create(CONFIG_FILE_PATH, content, new_script)
 
 
 def command_script_read(nickname):

@@ -72,13 +72,13 @@ def check_valid_keys(content):
 
 
 
-def write_toml(CONFIG_FILE_PATH, content):
+def write_toml(CONFIG_FILE, content):
 	# print("function: write_toml")
 
 	check_valid_keys(check_syntax(dumps(content)))
 
 	try:
-		with open(CONFIG_FILE_PATH, 'w') as f:
+		with open(CONFIG_FILE, 'w') as f:
 			f.write(dumps(content))
 	except Exception as e:
 		print("ERROR: General Exception")
@@ -87,7 +87,7 @@ def write_toml(CONFIG_FILE_PATH, content):
 
 
 
-def toml_script_create(CONFIG_FILE_PATH, content, new_script):
+def toml_script_create(CONFIG_FILE, content, new_script):
 	# print("function: toml_script_create")
 
 	for item in new_script:
@@ -101,7 +101,7 @@ def toml_script_create(CONFIG_FILE_PATH, content, new_script):
 
 			content['scripts'].append(script)
 
-			write_toml(CONFIG_FILE_PATH, content)
+			write_toml(CONFIG_FILE, content)
 		except Exception as e:
 			print("ERROR: General Exception")
 			print(e)
@@ -109,7 +109,7 @@ def toml_script_create(CONFIG_FILE_PATH, content, new_script):
 
 
 
-def toml_executor_create(CONFIG_FILE_PATH, content, new_executor):
+def toml_executor_create(CONFIG_FILE, content, new_executor):
 	# print("function: toml_executor_create")
 
 	for item in new_executor:
@@ -122,7 +122,7 @@ def toml_executor_create(CONFIG_FILE_PATH, content, new_executor):
 
 			content['executor'].append(executor)
 
-			write_toml(CONFIG_FILE_PATH, content)
+			write_toml(CONFIG_FILE, content)
 		except Exception as e:
 			print("ERROR: General Exception")
 			print(e)

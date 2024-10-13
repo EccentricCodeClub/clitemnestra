@@ -36,7 +36,7 @@ from clitemnestra.toml import write_toml
 # x check_valid_keys error scripts_keys, RIGHT executor_keys
 # v check_valid_keys RIGHT scripts_keys, RIGHT executor_keys
 
-# write_toml(CONFIG_FILE_PATH, content):
+# write_toml(CONFIG_FILE, content):
 # x write_toml pass error path
 # x write_toml pass RIGHT path, error keys
 # v write_toml pass RIGHT path, RIGHT keys

@@ -6,20 +6,17 @@ import sys
 from clitemnestra.parser import parse_args
 
 from clitemnestra.toml import check_toml_integrity
-from clitemnestra.toml import write_toml
-from clitemnestra.toml import toml_script_create
-from clitemnestra.toml import toml_executor_create
 
 from clitemnestra.info import info
 
 from clitemnestra.rich import rich_list_search
 from clitemnestra.rich import rich_config
-from clitemnestra.rich import rich_execution
-from clitemnestra.rich import rich_script_read
-from clitemnestra.rich import rich_executor_read
+
+from clitemnestra.crud import command_executor
+from clitemnestra.crud import command_script
 
 # CONSTANTS
-CONFIG_FILE_PATH = "clitemnestra/clitemnestra.toml"
+CONFIG_FILE = "clitemnestra/clitemnestra.toml"
 
 
 
@@ -41,9 +38,9 @@ def main():
 	elif parser.command == 'exec':
 		command_exec(parser.nickname)
 	elif parser.command == 'script':
-		command_script(parser)
+		command_script(CONFIG_FILE, parser)
 	elif parser.command == 'executor':
-		command_executor(parser)
+		command_executor(CONFIG_FILE, parser)
 	else:
 		info()
 
@@ -52,7 +49,7 @@ def main():
 def command_exec(nickname):
 	# print("function: command_exec")
 
-	content = check_toml_integrity(CONFIG_FILE_PATH)
+	content = check_toml_integrity(CONFIG_FILE)
 
 	nickname_exists = False
 	target = None
@@ -87,280 +84,11 @@ def command_exec(nickname):
 
 
 
-def command_executor(parser):
-	# print("function: command_executor")
-
-	if parser.executor_command == 'create':
-		command_executor_create(parser.nickname, parser.runner)
-	elif parser.executor_command == 'read':
-		command_executor_read(parser.nickname)
-	elif parser.executor_command == 'update':
-		command_executor_update(parser.nickname, parser.new_nickname, parser.new_runner)
-	elif parser.executor_command == 'delete':
-		command_executor_delete(parser.nickname)
-	else:
-		print("Invalid executor command")
-		sys.exit(1)
-
-
-
-def command_executor_create(nickname, runner):
-	# print("function: command_executor_create")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if name already exists
-	for executor in content['executor']:
-		if executor['name'] == nickname:
-			print("ERROR: name already exists")
-			print("Please use a different name")
-			sys.exit(1)
-
-	new_executor = [
-		{
-			'name': nickname,
-			'command': runner,
-			'tags': []
-		}
-	]
-
-	toml_executor_create(CONFIG_FILE_PATH, content, new_executor)
-
-
-def command_executor_read(nickname):
-	# print("function: command_executor_read")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname exists
-	nickname_exists = False
-	target = None
-
-	for executor in content['executor']:
-		if executor['name'] == nickname:
-			nickname_exists = True
-			target = executor
-			break
-
-	if not nickname_exists or target is None:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	matrix_executor = []
-	matrix_executor.append([target['name'], target['command'], '\n'.join(target['tags'])])
-
-	rich_executor_read(nickname, matrix_executor)
-
-
-
-def command_executor_update(nickname, new_nickname, new_runner):
-	# print("function: command_executor_update")
-	
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname exists
-	nickname_exists = False
-	for executor in content['executor']:
-		# Find and update the executor
-		if executor['name'] == nickname:
-			nickname_exists = True
-			executor["name"] = new_nickname
-			executor["command"] = new_runner
-			break
-
-	if not nickname_exists:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	# write content to file
-	write_toml(CONFIG_FILE_PATH, content)
-
-
-
-def command_executor_delete(nickname):
-	# print("function: command_executor_delete")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname exists
-	nickname_exists = False
-	for executor in content['executor']:
-		if executor['name'] == nickname:
-			nickname_exists = True
-			break
-
-	if not nickname_exists:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	# Find and remove the script with the name of nickname arg
-	for i, executor in enumerate(content["executor"]):
-		if executor["name"] == nickname:
-			del content["executor"][i]
-			break
-
-	# write content to file
-	write_toml(CONFIG_FILE_PATH, content)
-
-
-
-def command_script(parser):
-	# print("function: command_script")
-
-	if parser.script_command == 'create':
-		command_script_create(parser.nickname, parser.path, parser.executor)
-	elif parser.script_command == 'read':
-		command_script_read(parser.nickname)
-	elif parser.script_command == 'update':
-		command_script_update(parser.nickname, parser.new_nickname, parser.new_path, parser.new_executor)
-	elif parser.script_command == 'delete':
-		command_script_delete(parser.nickname)
-	else:
-		print("Invalid script command")
-		sys.exit(1)
-
-
-
-def command_script_create(nickname, path, executor):
-	# print("function: command_script_create")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname already exists
-	for script in content['scripts']:
-		if script['name'] == nickname:
-			print("ERROR: nickname already exists")
-			print("Please use a different nickname")
-			sys.exit(1)
-
-	# check if executor exists
-	executor_exists = False
-	for exec in content['executor']:
-		if exec['name'] == executor:
-			executor_exists = True
-			break
-
-	if not executor_exists:
-		print("ERROR: executor not found")
-		print("Please create the executor first")
-		sys.exit(1)
-
-	new_script = [
-		{
-			'name': nickname,
-			'path': path,
-			'executor': executor,
-			'tags': []
-		}
-	]
-
-	toml_script_create(CONFIG_FILE_PATH, content, new_script)
-
-
-def command_script_read(nickname):
-	# print("function: command_script_read")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname exists
-	nickname_exists = False
-	target = None
-	execution = None
-
-	for script in content['scripts']:
-		if script['name'] == nickname:
-			nickname_exists = True
-			target = script
-			break
-
-	if not nickname_exists or target is None:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	rich_script_read(nickname, target, content['executor'])
-
-	for items in content['executor']:
-		if items['name'] == target['executor']:
-			execution = items['command'] + " " + target['path']
-
-			break
-
-	if execution is not None:
-		print()
-		rich_execution(execution)
-		print()
-
-
-
-def command_script_update(nickname, new_nickname, new_path, new_executor):
-	# print("function: command_script_update")
-	
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if executor exists
-	executor_exists = False
-	for exec in content['executor']:
-		if exec['name'] == new_executor:
-			executor_exists = True
-			break
-
-	if not executor_exists:
-		print("ERROR: executor not found")
-		print("Please create the executor first")
-		sys.exit(1)
-
-	# check if nickname exists
-	nickname_exists = False
-	for script in content['scripts']:
-		# Find and update the script with the name of nickname arg
-		if script['name'] == nickname:
-			nickname_exists = True
-			script["name"] = new_nickname
-			script["path"] = new_path
-			script["executor"] = new_executor
-			break
-
-	if not nickname_exists:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	# write content to file
-	write_toml(CONFIG_FILE_PATH, content)
-
-
-
-def command_script_delete(nickname):
-	# print("function: command_script_delete")
-
-	content = check_toml_integrity(CONFIG_FILE_PATH)
-
-	# check if nickname exists
-	nickname_exists = False
-	for script in content['scripts']:
-		if script['name'] == nickname:
-			nickname_exists = True
-			break
-
-	if not nickname_exists:
-		print("ERROR: nickname not found")
-		sys.exit(1)
-
-	# Find and remove the script with the name of nickname arg
-	for i, script in enumerate(content["scripts"]):
-		if script["name"] == nickname:
-			del content["scripts"][i]
-			break
-
-	# write content to file
-	write_toml(CONFIG_FILE_PATH, content)
-
-
-
 def command_edit():
 	# print("function: command_edit")
 	# common editors: nano, neovim, vim, vi, emacs, gedit, code
 
-	content = check_toml_integrity(CONFIG_FILE_PATH)
+	content = check_toml_integrity(CONFIG_FILE)
 
 	editor = None
 	# detect the editor of configuration file
@@ -377,7 +105,7 @@ def command_edit():
 		sys.exit(1)
 	else:
 		try:
-			os.system(f"{editor} {CONFIG_FILE_PATH}")
+			os.system(f"{editor} {CONFIG_FILE}")
 		except Exception as e:
 			print("ERROR: editor error")
 			print(e)
@@ -388,7 +116,7 @@ def command_edit():
 def command_config():
 	# print("function: command_config")
 
-	content = check_toml_integrity(CONFIG_FILE_PATH)
+	content = check_toml_integrity(CONFIG_FILE)
 
 	matrix_config = []
 
@@ -406,7 +134,7 @@ def command_config():
 def command_search(term):
 	# print("function: command_search")
 
-	content = check_toml_integrity(CONFIG_FILE_PATH)
+	content = check_toml_integrity(CONFIG_FILE)
 
 	matrix_scripts = []
 	matrix_executors = []
@@ -439,7 +167,7 @@ def command_search(term):
 def command_list(tag):
 	# print("function: command_list")
 
-	content = check_toml_integrity(CONFIG_FILE_PATH)
+	content = check_toml_integrity(CONFIG_FILE)
 
 	matrix_scripts = []
 	matrix_executors = []
